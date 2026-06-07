@@ -33,15 +33,6 @@
         .status-btn.pass.active { background: var(--success); color: white; border-color: var(--success); box-shadow: 0 2px 4px rgba(22, 163, 74, 0.2); }
         .status-btn.fail.active { background: var(--danger); color: white; border-color: var(--danger); box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2); }
         
-        /* Photo Grid Interface */
-        .photo-list-container { display: flex; flex-direction: column; gap: 10px; }
-        .photo-row-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; transition: all 0.2s ease; }
-        .photo-label { font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; }
-        .camera-trigger-btn { padding: 10px 16px; background: #475569; color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; min-width: 130px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .photo-row-item.attached { border-color: var(--success); background: #f0fdf4; }
-        .photo-row-item.attached .camera-trigger-btn { background: var(--success); }
-        .file-input { display: none; }
-        
         /* Legal Declaration Box */
         .disclaimer-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px; border-radius: 8px; margin-top: 15px; }
         .disclaimer-text { font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 12px; font-weight: 500; text-align: justify; }
@@ -58,12 +49,10 @@
     <h1>HGV Walkaround Check</h1>
     <div class="subtitle">DVSA & RHA Compliance Portal</div>
 
-    <form id="checksheet-form" action="https://formspree.io/f/mnqeogww" method="POST" enctype="multipart/form-data">
+    <!-- 🚨 PASTE YOUR GOOGLE WEB APP URL IN THE ACTION ATTRIBUTE BELOW 🚨 -->
+    <form id="checksheet-form" action="https://script.google.com/macros/s/AKfycbx0xLXfgmuCSF5Vdygp2ES-FNH2_kRtVZzOz8wC7u-EdzC-ZwETK6pAxx_FOlzLSV0o/exec" method="POST">
         
-        <input type="hidden" id="hidden-replyto" name="_replyto" value="">
-        <input type="hidden" id="hidden-subject" name="_subject" value="HGV Walkaround Report Submitted">
-        <input type="hidden" id="hidden-report-body" name="Safety Audit Breakdown Log" value="">
-
+        <!-- Logistics Metadata -->
         <div class="section">
             <div class="section-title">Asset & Driver Details</div>
             <div class="form-group">
@@ -84,6 +73,7 @@
             </div>
         </div>
 
+        <!-- Full 20 Legal Compliance Checklist mapped directly to script hooks -->
         <div class="section">
             <div class="section-title">In-Cab & Exterior Safety Points</div>
             
@@ -92,7 +82,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_01')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_01')">FAIL</button>
-                    <input type="hidden" id="check_01" name="Item 01: Mirrors and Glass" value="PASS">
+                    <input type="hidden" id="check_01" name="Item 01" value="PASS">
                 </div>
             </div>
 
@@ -101,7 +91,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_02')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_02')">FAIL</button>
-                    <input type="hidden" id="check_02" name="Item 02: Wipers and Washers" value="PASS">
+                    <input type="hidden" id="check_02" name="Item 02" value="PASS">
                 </div>
             </div>
 
@@ -110,7 +100,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_03')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_03')">FAIL</button>
-                    <input type="hidden" id="check_03" name="Item 03: Steering and Controls" value="PASS">
+                    <input type="hidden" id="check_03" name="Item 03" value="PASS">
                 </div>
             </div>
 
@@ -119,7 +109,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_04')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_04')">FAIL</button>
-                    <input type="hidden" id="check_04" name="Item 04: Tachograph and Instruments" value="PASS">
+                    <input type="hidden" id="check_04" name="Item 04" value="PASS">
                 </div>
             </div>
 
@@ -128,7 +118,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_05')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_05')">FAIL</button>
-                    <input type="hidden" id="check_05" name="Item 05: Brakes and Air Systems" value="PASS">
+                    <input type="hidden" id="check_05" name="Item 05" value="PASS">
                 </div>
             </div>
 
@@ -137,7 +127,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_06')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_06')">FAIL</button>
-                    <input type="hidden" id="check_06" name="Item 06: Cab Interior Security" value="PASS">
+                    <input type="hidden" id="check_06" name="Item 06" value="PASS">
                 </div>
             </div>
 
@@ -146,7 +136,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_07')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_07')">FAIL</button>
-                    <input type="hidden" id="check_07" name="Item 07: Lights and Markers" value="PASS">
+                    <input type="hidden" id="check_07" name="Item 07" value="PASS">
                 </div>
             </div>
 
@@ -155,7 +145,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_08')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_08')">FAIL</button>
-                    <input type="hidden" id="check_08" name="Item 08: Reflectors" value="PASS">
+                    <input type="hidden" id="check_08" name="Item 08" value="PASS">
                 </div>
             </div>
 
@@ -164,7 +154,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_09')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_09')">FAIL</button>
-                    <input type="hidden" id="check_09" name="Item 09: Tyre Conditions" value="PASS">
+                    <input type="hidden" id="check_09" name="Item 09" value="PASS">
                 </div>
             </div>
 
@@ -173,7 +163,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_10')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_10')">FAIL</button>
-                    <input type="hidden" id="check_10" name="Item 10: Wheel Torque Security" value="PASS">
+                    <input type="hidden" id="check_10" name="Item 10" value="PASS">
                 </div>
             </div>
 
@@ -182,7 +172,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_11')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_11')">FAIL</button>
-                    <input type="hidden" id="check_11" name="Item 11: Mudguards and Suppression" value="PASS">
+                    <input type="hidden" id="check_11" name="Item 11" value="PASS">
                 </div>
             </div>
 
@@ -191,7 +181,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_12')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_12')">FAIL</button>
-                    <input type="hidden" id="check_12" name="Item 12: Battery and Wiring Links" value="PASS">
+                    <input type="hidden" id="check_12" name="Item 12" value="PASS">
                 </div>
             </div>
 
@@ -200,7 +190,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_13')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_13')">FAIL</button>
-                    <input type="hidden" id="check_13" name="Item 13: Fluids and Leak Checks" value="PASS">
+                    <input type="hidden" id="check_13" name="Item 13" value="PASS">
                 </div>
             </div>
 
@@ -209,7 +199,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_14')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_14')">FAIL</button>
-                    <input type="hidden" id="check_14" name="Item 14: Fuel Lines and Cap Sealing" value="PASS">
+                    <input type="hidden" id="check_14" name="Item 14" value="PASS">
                 </div>
             </div>
 
@@ -218,7 +208,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_15')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_15')">FAIL</button>
-                    <input type="hidden" id="check_15" name="Item 15: Exhaust and AdBlue" value="PASS">
+                    <input type="hidden" id="check_15" name="Item 15" value="PASS">
                 </div>
             </div>
 
@@ -227,7 +217,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_16')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_16')">FAIL</button>
-                    <input type="hidden" id="check_16" name="Item 16: Structural Panel Security" value="PASS">
+                    <input type="hidden" id="check_16" name="Item 16" value="PASS">
                 </div>
             </div>
 
@@ -236,7 +226,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_17')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_17')">FAIL</button>
-                    <input type="hidden" id="check_17" name="Item 17: Load Security and Tarps" value="PASS">
+                    <input type="hidden" id="check_17" name="Item 17" value="PASS">
                 </div>
             </div>
 
@@ -245,7 +235,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_18')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_18')">FAIL</button>
-                    <input type="hidden" id="check_18" name="Item 18: Coupling Links" value="PASS">
+                    <input type="hidden" id="check_18" name="Item 18" value="PASS">
                 </div>
             </div>
 
@@ -254,7 +244,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_19')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_19')">FAIL</button>
-                    <input type="hidden" id="check_19" name="Item 19: Load Placards" value="PASS">
+                    <input type="hidden" id="check_19" name="Item 19" value="PASS">
                 </div>
             </div>
 
@@ -263,42 +253,12 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_20')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_20')">FAIL</button>
-                    <input type="hidden" id="check_20" name="Item 20: Chassis Frame and Suspension" value="PASS">
+                    <input type="hidden" id="check_20" name="Item 20" value="PASS">
                 </div>
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">Mandatory Condition Evidences</div>
-            <div class="photo-list-container">
-                
-                <div class="photo-row-item" id="row-front">
-                    <span class="photo-label">FRONT PROFILE (Incl. Reg)</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-front').click()">📷 TAKE PHOTO</button>
-                    <input type="file" name="Photo - Front Aspect" id="img-front" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-front')">
-                </div>
-
-                <div class="photo-row-item" id="row-offside">
-                    <span class="photo-label">OFFSIDE PROFILE (Right)</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-offside').click()">📷 TAKE PHOTO</button>
-                    <input type="file" name="Photo - Offside Aspect" id="img-offside" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-offside')">
-                </div>
-
-                <div class="photo-row-item" id="row-nearside">
-                    <span class="photo-label">NEARSIDE PROFILE (Left)</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-nearside').click()">📷 TAKE PHOTO</button>
-                    <input type="file" name="Photo - Nearside Aspect" id="img-nearside" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-nearside')">
-                </div>
-
-                <div class="photo-row-item" id="row-rear">
-                    <span class="photo-label">REAR ASPECT & COUPLING</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-rear').click()">📷 TAKE PHOTO</button>
-                    <input type="file" name="Photo - Rear Aspect" id="img-rear" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-rear')">
-                </div>
-
-            </div>
-        </div>
-
+        <!-- Legal Disclaimer & Declaration Box -->
         <div class="section">
             <div class="section-title">Legal Declaration</div>
             <div class="disclaimer-box">
@@ -312,18 +272,19 @@
             </div>
         </div>
 
+        <!-- Submission Trigger -->
         <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION SHEET</button>
     </form>
 </div>
 
 <script>
-    // Handles toggling colors and changing hidden input data values safely without freezing
+    // Safely switches UI button status states and changes hidden field payloads dynamically
     function setCheckStatus(button, inputId) {
         const parent = button.parentElement;
         parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
         
-        // Match chosen button value into standard text format parameter
+        // Dynamically matches text content into actual data input parameters
         document.getElementById(inputId).value = button.innerText;
     }
 
@@ -334,42 +295,16 @@
         }
     }
 
-    // Handles highlighting row items when file attachments are added via phone cameras
-    function handleFileSelected(inputElement, rowId) {
-        if (!inputElement.files || inputElement.files.length === 0) return;
-        
-        const row = document.getElementById(rowId);
-        const triggerBtn = row.querySelector('.camera-trigger-btn');
-        
-        row.classList.add('attached');
-        triggerBtn.innerText = "✓ ATTACHED";
-        triggerBtn.style.background = "var(--success)";
-    }
-
-    // Inject parameters cleanly right at interception runtime
+    // Listens for form submission to lock data variables correctly
     document.getElementById('checksheet-form').addEventListener('submit', function() {
-        const regField = document.getElementById('vehicle_reg').value.toUpperCase();
-        const driverField = document.getElementById('driver_name').value;
-        
-        // Dynamic subject assignment routing
-        document.getElementById('hidden-replyto').value = TARGET_WORK_EMAIL;
-        document.getElementById('hidden-subject').value = `DVSA Audit Log: ${regField} - ${driverField}`;
-        
-        const auditItems = [];
         for(let i=1; i<=20; i++) {
             const padId = i < 10 ? '0' + i : i;
-            const val = document.getElementById(`check_${padId}`).value;
-            auditItems.push(`Item ${padId}: [${val}]`);
+            let hiddenInput = document.getElementById(`check_${padId}`);
+            if (hiddenInput) {
+                hiddenInput.name = `Item ${padId}`;
+            }
         }
-        
-        document.getElementById('hidden-report-body').value = auditItems.join('\n');
     });
-
-    // =========================================================================
-    // ⬇️ CHANGE THE EMAIL ADDRESS INSIDE THE QUOTE MARKS BELOW ⬇️
-    // =========================================================================
-    const TARGET_WORK_EMAIL = "davidmlangstead@gmail.com";
-    
 </script>
 
 </body>
