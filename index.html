@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fleet Walkaround Portal</title>
+    <title>RHA / DVSA Compliant Walkaround Portal</title>
     <style>
         :root {
             --primary: #1e3a8a;
@@ -13,147 +13,275 @@
             --text: #0f172a;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: var(--background); color: var(--text); padding: 16px; }
+        body { background: var(--background); color: var(--text); padding: 16px; -webkit-tap-highlight-color: transparent; }
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        h1 { color: var(--primary); font-size: 24px; margin-bottom: 20px; text-align: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
-        .section { margin-bottom: 24px; background: #fff; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; }
-        .section-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; }
+        h1 { color: var(--primary); font-size: 22px; margin-bottom: 5px; text-align: center; font-weight: 800; }
+        .subtitle { font-size: 13px; text-align: center; color: #64748b; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .section { margin-bottom: 20px; background: #fff; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; }
+        .section-title { font-size: 14px; font-weight: 800; color: var(--primary); margin-bottom: 14px; text-transform: uppercase; border-left: 4px solid var(--primary); padding-left: 8px; }
         .form-group { margin-bottom: 14px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-        input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+        label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 13px; color: #334155; }
+        input[type="text"], select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; background: #f8fafc; }
         
-        /* Compliance Checkboxes */
+        /* Compliance Rows */
         .check-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-        .check-label { font-size: 14px; font-weight: 500; padding-right: 10px; }
-        .status-switch { display: flex; gap: 8px; }
-        .status-btn { padding: 8px 16px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
-        .status-btn.pass.active { background: var(--success); color: white; border-color: var(--success); }
-        .status-btn.fail.active { background: var(--danger); color: white; border-color: var(--danger); }
+        .check-row:last-child { border-bottom: none; }
+        .check-label { font-size: 14px; font-weight: 600; color: #1e293b; padding-right: 12px; line-height: 1.3; }
+        .status-switch { display: flex; gap: 6px; }
+        .status-btn { padding: 10px 18px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; font-weight: 800; cursor: pointer; font-size: 13px; transition: all 0.15s ease; }
+        .status-btn.pass.active { background: var(--success); color: white; border-color: var(--success); box-shadow: 0 2px 4px rgba(22, 163, 74, 0.2); }
+        .status-btn.fail.active { background: var(--danger); color: white; border-color: var(--danger); box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2); }
         
-        /* Camera Interface & Containers */
-        .photo-list-container { margin-bottom: 15px; }
-        .photo-row-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; transition: all 0.3s ease; }
-        .photo-label { font-size: 12px; font-weight: 700; color: #1e293b; }
-        .camera-trigger-btn { padding: 10px 14px; background: #64748b; color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; min-width: 120px; text-align: center; }
+        /* Photo Grid Interface */
+        .photo-list-container { display: flex; flex-direction: column; gap: 10px; }
+        .photo-row-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; transition: all 0.2s ease; }
+        .photo-label { font-size: 12px; font-weight: 800; color: #1e293b; text-transform: uppercase; }
+        .camera-trigger-btn { padding: 10px 16px; background: #475569; color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; min-width: 130px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .photo-row-item.attached { border-color: var(--success); background: #f0fdf4; }
         .photo-row-item.attached .camera-trigger-btn { background: var(--success); }
         .file-input { display: none; }
         
-        /* Queue Notification Banner */
-        #network-banner { display: none; background: #fef3c7; border: 1px solid #f59e0b; color: #b45309; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; font-weight: 600; text-align: center; }
+        /* Banner Notification */
+        #network-banner { display: none; background: #fffbeb; border: 1px solid #f59e0b; color: #b45309; padding: 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; font-weight: 700; text-align: center; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.05); }
         
-        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 15px; letter-spacing: 0.5px; box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.3); }
+        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>DVSA Walkaround Check</h1>
+    <h1>HGV Walkaround Check</h1>
+    <div class="subtitle">DVSA & RHA Compliance Portal</div>
     
-    <div id="network-banner">⚠️ Device Offline: Inspections will save locally and upload automatically when signal returns.</div>
+    <div id="network-banner">⚠️ DEVICE OFFLINE: Safety logs will save locally and sync automatically when network signal returns.</div>
 
     <form id="checksheet-form">
         <div class="section">
-            <div class="section-title">Logistics & Asset Details</div>
+            <div class="section-title">Asset & Driver Details</div>
             <div class="form-group">
                 <label for="driver_name">Driver Name</label>
-                <input type="text" id="driver_name" required placeholder="John Doe">
+                <input type="text" id="driver_name" required placeholder="Enter full name">
             </div>
             <div class="form-group">
-                <label for="vehicle_reg">Vehicle Registration</label>
-                <input type="text" id="vehicle_reg" required placeholder="RE26 XYZ" style="text-transform: uppercase;">
+                <label for="vehicle_reg">Vehicle Registration (Tractor/Rigid)</label>
+                <input type="text" id="vehicle_reg" required placeholder="e.g. AB12 CDE" style="text-transform: uppercase;">
             </div>
             <div class="form-group">
-                <label for="trailer_id">Trailer ID (Optional)</label>
-                <input type="text" id="trailer_id" placeholder="T1234">
+                <label for="trailer_id">Trailer ID (If Applicable)</label>
+                <input type="text" id="trailer_id" placeholder="e.g. T12345" style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label for="odometer_reading">Odometer Reading (km/miles)</label>
+                <input type="text" id="odometer_reading" required placeholder="e.g. 245310">
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">Safety Inspection Points</div>
+            <div class="section-title">In-Cab & Exterior Safety Points</div>
             
             <div class="check-row">
-                <span class="check-label">1. Tyres, Wheels & Fixings</span>
+                <span class="check-label">1. Mirrors, Glass & Visibility Aids</span>
                 <div class="status-switch">
-                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
-                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
                 </div>
             </div>
 
             <div class="check-row">
-                <span class="check-label">2. Brakes & Air Systems</span>
+                <span class="check-label">2. Windscreen Wipers & Washers</span>
                 <div class="status-switch">
-                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
-                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
                 </div>
             </div>
 
             <div class="check-row">
-                <span class="check-label">3. Lights, Indicators & Reflectors</span>
+                <span class="check-label">3. Steering, Horn & Cockpit Controls</span>
                 <div class="status-switch">
-                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
-                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
                 </div>
             </div>
 
             <div class="check-row">
-                <span class="check-label">4. Windscreen, Wipers & Washers</span>
+                <span class="check-label">4. Tachograph, Speedo & Instruments</span>
                 <div class="status-switch">
-                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
-                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
                 </div>
             </div>
 
             <div class="check-row">
-                <span class="check-label">5. Mirrors & Visibility Aids</span>
+                <span class="check-label">5. Brakes, Air Build-up & Leakage</span>
                 <div class="status-switch">
-                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
-                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">6. Seatbelts, Seats & Cab Security</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">7. Lights, Indicators & Markers</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">8. Reflectors & Conspicuity Markings</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">9. Tyres, Tread Depth & Sidewalls</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">10. Wheels, Wheel Nuts & Rims</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">11. Mudguards, Wings & Spray Suppression</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">12. Battery, Electrical Links & Wiring</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">13. Engine Fluid Levels & Hidden Leaks</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">14. Fuel System, Tank Caps & Lines</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">15. Exhaust System & AdBlue Security</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">16. Body, Doors & Sideguards</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">17. Load Security, Lashings & Tarps</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">18. Fifth Wheel, Pins & Tow Couplings</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">19. Marker Boards & Dynamic Load Signs</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">20. Under-Vehicle Security & Suspension</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this)">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this)">FAIL</button>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">Mandatory Condition Photos</div>
+            <div class="section-title">Mandatory Condition Evidences</div>
             <div class="photo-list-container">
                 
                 <div class="photo-row-item" id="row-front">
-                    <span class="photo-label">FRONT ASPECT (Include Reg)</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-front').click()">📷 CAPTURE</button>
+                    <span class="photo-label">FRONT PROFILE (Incl. Reg)</span>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-front').click()">📷 TAKE PHOTO</button>
                     <input type="file" id="img-front" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-front')">
                 </div>
 
                 <div class="photo-row-item" id="row-offside">
                     <span class="photo-label">OFFSIDE PROFILE (Right)</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-offside').click()">📷 CAPTURE</button>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-offside').click()">📷 TAKE PHOTO</button>
                     <input type="file" id="img-offside" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-offside')">
                 </div>
 
                 <div class="photo-row-item" id="row-nearside">
                     <span class="photo-label">NEARSIDE PROFILE (Left)</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-nearside').click()">📷 CAPTURE</button>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-nearside').click()">📷 TAKE PHOTO</button>
                     <input type="file" id="img-nearside" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-nearside')">
                 </div>
 
                 <div class="photo-row-item" id="row-rear">
                     <span class="photo-label">REAR ASPECT & COUPLING</span>
-                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-rear').click()">📷 CAPTURE</button>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-rear').click()">📷 TAKE PHOTO</button>
                     <input type="file" id="img-rear" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-rear')">
                 </div>
 
             </div>
         </div>
 
-        <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION</button>
+        <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION SHEET</button>
     </form>
 </div>
 
 <script>
-    // Global storage object for image files mapping
+    // In-memory array mapping compressed image blobs
     const capturedImages = { front: null, offside: null, nearside: null, rear: null };
 
-    // Set up local storage database (IndexedDB) for robust offline capability
+    // Establish browser-level robust local database context (IndexedDB)
     let db;
     const request = indexedDB.open('FleetAuditDB', 1);
     request.onupgradeneeded = (e) => {
@@ -164,19 +292,19 @@
     };
     request.onsuccess = (e) => { db = e.target.result; syncOfflineQueue(); };
 
-    // Listen to network changes to toggle the offline notice banner
+    // Detect signal fluctuations
     window.addEventListener('online', () => { document.getElementById('network-banner').style.display = 'none'; syncOfflineQueue(); });
     window.addEventListener('offline', () => { document.getElementById('network-banner').style.display = 'block'; });
     if (!navigator.onLine) document.getElementById('network-banner').style.display = 'block';
 
-    // Toggle PASS/FAIL mechanics visually
-    function setCheckStatus(button, status) {
+    // Interactive button state processing
+    function setCheckStatus(button) {
         const parent = button.parentElement;
         parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
     }
 
-    // Handles compression immediately when driver clicks save/takes snapshot
+    // Intercept image capture immediately for on-device canvas resizing
     async function handleFileSelected(inputElement, rowId) {
         if (!inputElement.files || inputElement.files.length === 0) return;
         
@@ -188,4 +316,190 @@
         triggerBtn.style.background = "#eab308";
 
         try {
-            //
+            // Compress image file on the client system directly
+            const compressedBlob = await compressImage(file);
+            const typeKey = rowId.replace('row-', '');
+            capturedImages[typeKey] = compressedBlob;
+
+            // Update row layout look to show attachment confirmation
+            row.classList.add('attached');
+            triggerBtn.innerText = "✓ ATTACHED";
+            triggerBtn.style.background = "var(--success)";
+        } catch (err) {
+            console.error("Image sizing error encountered", err);
+            triggerBtn.innerText = "⚠️ RETAKE PHOTO";
+            triggerBtn.style.background = "var(--danger)";
+        }
+    }
+
+    // Client-side image canvas parser - Truncates huge raw files down to light ~200KB footprints
+    function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 1024; // Standard resolution boundary factor
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Output quality profile threshold mapped to 70% efficiency
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            resolve(blob);
+                        } else {
+                            reject(new Error("Blob parsing compilation error"));
+                        }
+                    }, 'image/jpeg', 0.7);
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    }
+
+    // Action data submission handler
+    document.getElementById('checksheet-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submit-button');
+        submitBtn.disabled = true;
+        submitBtn.innerText = "TRANSMITTING DATA...";
+
+        // Collect checkbox inputs mapping
+        const auditItems = {};
+        document.querySelectorAll('.check-row').forEach(row => {
+            const label = row.querySelector('.check-label').innerText;
+            const activeStatus = row.querySelector('.status-btn.active').innerText;
+            auditItems[label] = activeStatus;
+        });
+
+        // Assemble document structure mapping
+        const payload = {
+            driver_name: document.getElementById('driver_name').value,
+            vehicle_reg: document.getElementById('vehicle_reg').value.toUpperCase(),
+            trailer_id: document.getElementById('trailer_id').value.toUpperCase() || 'NONE',
+            odometer: document.getElementById('odometer_reading').value,
+            checks: auditItems,
+            timestamp: new Date().toISOString(),
+            images: {}
+        };
+
+        // Convert the lightweight compressed blobs to text payloads
+        for (const [key, blob] of Object.entries(capturedImages)) {
+            if (blob) {
+                payload.images[key] = await blobToBase64(blob);
+            }
+        }
+
+        // Direct routing loop checking internet signal context
+        if (navigator.onLine) {
+            await uploadDataToServer(payload);
+        } else {
+            saveToOfflineQueue(payload);
+        }
+    });
+
+    function blobToBase64(blob) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => resolve(reader.result);
+        });
+    }
+
+    function saveToOfflineQueue(data) {
+        const tx = db.transaction('inspections', 'readwrite');
+        tx.objectStore('inspections').add(data);
+        tx.oncomplete = () => {
+            alert("✓ Offline Check Sheet Saved! Record stored securely on your device. Upload will complete automatically when cellular signal is acquired.");
+            resetForm();
+        };
+    }
+
+    async function uploadDataToServer(data) {
+        try {
+            // Replace with your PowerAutomate/Office365 endpoint webhook whenever ready
+            const response = await fetch('https://httpbin.org/post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert("🚀 Safety Inspection Uploaded Successfully! System updated.");
+                resetForm();
+            } else {
+                throw new Error("Target cluster offline drop down connection fault");
+            }
+        } catch (err) {
+            console.warn("Connection weak. Dropping log to local offline queue storage.", err);
+            saveToOfflineQueue(data);
+        }
+    }
+
+    function syncOfflineQueue() {
+        if (!db || !navigator.onLine) return;
+        const tx = db.transaction('inspections', 'readwrite');
+        const store = tx.objectStore('inspections');
+        const getAll = store.openCursor();
+
+        getAll.onsuccess = async (e) => {
+            const cursor = e.target.result;
+            if (cursor) {
+                const record = cursor.value;
+                const recordId = cursor.key;
+                
+                try {
+                    const response = await fetch('https://httpbin.org/post', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(record)
+                    });
+                    if (response.ok) {
+                        const deleteTx = db.transaction('inspections', 'readwrite');
+                        deleteTx.objectStore('inspections').delete(recordId);
+                    }
+                } catch (err) {
+                    console.error("Queue loop retry holding pattern", err);
+                }
+                cursor.continue();
+            }
+        };
+    }
+
+    function resetForm() {
+        document.getElementById('checksheet-form').reset();
+        document.querySelectorAll('.photo-row-item').forEach(row => {
+            row.classList.remove('attached');
+            const btn = row.querySelector('.camera-trigger-btn');
+            btn.innerText = "📷 TAKE PHOTO";
+            btn.style.background = "#475569";
+        });
+        Object.keys(capturedImages).forEach(key => capturedImages[key] = null);
+        const submitBtn = document.getElementById('submit-button');
+        submitBtn.disabled = false;
+        submitBtn.innerText = "SUBMIT INSPECTION SHEET";
+    }
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('Offline tracker active', err));
+        });
+    }
+</script>
+
+</body>
+</html>
