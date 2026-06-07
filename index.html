@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fleet & Site Compliance Portal</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 15px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #1a365d;
+      margin-top: 0;
+    }
+    .section-title {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 1em;
+    }
+    .gps-box {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #166534;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .check-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .check-label {
+      flex: 1;
+      padding-right: 10px;
+      font-size: 0.95em;
+    }
+    .btn-toggle {
+      display: flex;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .btn-toggle input[type="radio"] {
+      display: none;
+    }
+    .btn-toggle label {
+      margin: 0;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9em;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .pass-label { background: #f8fafc; color: #64748b; }
+    .fail-label { background: #f8fafc; color: #64748b; }
+    
+    .btn-toggle input[value="PASS"]:checked + .pass-label {
+      background-color: #22c55e;
+      color: white;
+    }
+    .btn-toggle input[value="FAIL"]:checked + .fail-label {
+      background-color: #ef4444;
+      color: white;
+    }
+    .fieldset-box {
+      margin-bottom: 25px;
+      border: 1px solid #cbd5e1;
+      padding: 15px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .fieldset-box legend {
+      font-weight: bold;
+      padding: 0 10px;
+    }
+    .submit-btn {
+      width: 100%;
+      background-color: #1a365d;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .submit-btn:hover {
+      background-color: #2c5282;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>📋 Fleet & Site Compliance Log</h2>
+  
+  <div id="gpsStatus" class="gps-box">📡 Requesting GPS Satellite Lock...</div>
+
+  <form id="complianceForm">
+    
+    <input type="hidden" id="latField" name="Latitude" value="">
+    <input type="hidden" id="lonField" name="Longitude" value="">
+
+    <div class="section-title">Core Information</div>
+    
+    <div class="input-group">
+      <label for="driverName">Driver Full Name:</label>
+      <input type="text" id="driverName" name="Driver Name" required placeholder="e.g. John Doe">
+    </div>
+
+    <div class="input-group">
+      <label for="vehReg">Vehicle Registration (HGV):</label>
+      <input type="text" id="vehReg" name="Vehicle Registration" required placeholder="e.g. AB12 CDE" style="text-transform: uppercase;">
+    </div>
+
+    <div class="input-group">
+      <label for="trailerId">Trailer ID Number (If applicable):</label>
+      <input type="text" id="trailerId" name="Trailer ID" placeholder="e.g. T-104" style="text-transform: uppercase;">
+    </div>
+
+    <div class="input-group">
+      <label for="odometer">Current Odometer Reading:</label>
+      <input type="number" id="odometer" name="Odometer Log" required placeholder="e.g. 142050">
+    </div>
+
+    <fieldset class="fieldset-box">
+      <legend style="color: #ef4444;">📍 Point of Work Risk Assessment (POWRA)</legend>
+      <p style="font-size: 0.85em; color: #64748b; margin-top:0;">Verify site safety and hazard configurations before working:</p>
+
+      <div class="check-row">
+        <span class="check-label">1. Correct PPE being worn (Hi-Vis, Boots, Helmet)?</span>
+        <select name="POWRA_PPE">
+          <option value="YES">YES ✅</option>
+          <option value="NO">NO ❌</option>
+        </select>
+      </div>
+
+      <div class="check-row">
+        <span class="check-label">2. Overhead cables or underground structures checked?</span>
+        <select name="POWRA_Services">
+          <option value="YES">YES ✅</option>
+          <option value="NO">NO ❌</option>
+        </select>
+      </div>
+
+      <div class="check-row">
+        <span class="check-label">3. Ground conditions stable/level for tipping?</span>
+        <select name="POWRA_Ground">
+          <option value="YES">YES ✅</option>
+          <option value="NO">NO ❌</option>
+        </select>
+      </div>
+
+      <div class="check-row">
+        <span class="check-label">4. Safe public & machine exclusion zone established?</span>
+        <select name="POWRA_Exclusion">
+          <option value="YES">YES ✅</option>
+          <option value="NO">NO ❌</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <fieldset class="fieldset-box">
+      <legend style="color: #3b82f6;">📄 Duty of Care Waste Transfer Note</legend>
+      
+      <div class="input-group">
+        <label>Description of Material:</label>
+        <select id="wtnDesc" name="WTN_Description" onchange="updateEwcCode()">
+          <option value="Inert Soil & Stones">Inert Soil & Stones (Clean Muck)</option>
+          <option value="Mixed Construction & Demolition Waste">Mixed Construction & Demolition Waste</option>
+          <option value="Concrete, Bricks, Tiles & Ceramics">Concrete, Bricks, Tiles & Ceramics</option>
+          <option value="Track Ballast containing hazardous substances">Track Ballast (Hazardous)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Assigned EWC Code (Auto-Filled):</label>
+        <input type="text" id="wtnEwc" name="WTN_EWC" value="17 05 04" readonly>
+      </div>
+
+      <div class="input-group">
+        <label>Container / Vehicle Payload Profile:</label>
+        <select name="WTN_Container">
+          <option value="8x4 Rigid Tipper Body">8x4 Rigid Tipper Body</option>
+          <option value="Articulated Ejector Trailer">Articulated Ejector Trailer</option>
+          <option value="Roll-on Roll-off (RoRo) Container">Roll-on Roll-off (RoRo) Container</option>
+          <option value="8-Yard Skip Container">8-Yard Skip Container</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Final Disposal Site / Tip Destination:</label>
+        <input type="text" name="WTN_Destination" placeholder="e.g. Apex Quarry / Local Recycling Transfer Station" required>
+      </div>
+    </fieldset>
+
+    <div class="section-title">20-Point Daily Vehicle Inspection</div>
+    <div id="walkaroundSection"></div>
+
+    <div class="section-title">Legal Declaration</div>
+    <div class="input-group" style="background: #f8fafc; padding: 12px; border-radius:6px; border:1px solid #cbd5e1;">
+      <label style="display: flex; align-items: flex-start; font-weight: normal; cursor: pointer;">
+        <input type="checkbox" name="Driver Declaration Aggreement" value="AGREED" required style="margin-right: 10px; margin-top: 3px;">
+        <span>I confirm that I have carried out a full walkaround vehicle inspection, and all defects have been accurately reported.</span>
+      </label>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Submit Secure Log</button>
+
+  </form>
+</div>
+
+<script>
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOvcoR54_qGJc_AuGpqIKrmEe50YWvqig9sOodcyxozIXaF8O5gmKEbVBgfyVksj7O/exec";
+
+  const checklistItems = [
+    "Mirrors and Glass Visibility",
+    "Windscreen Wipers and Washers",
+    "Steering Mechanism & Controls",
+    "Horn Functionality",
+    "Front Lights and Indicators",
+    "Rear Lights, Brake Lights & Indicators",
+    "Reflectors and Rear Markings",
+    "Tyre Condition and Tread Depth",
+    "Wheel Fixing Nuts and Security",
+    "Bodywork, Panels and Wings",
+    "Mudflaps and Spray Suppression",
+    "Exhaust System and Smoke Emissions",
+    "Fuel System Integrity & Cap Safety",
+    "AdBlue System and Fluid Levels",
+    "Brake Operations and Air Pressure Warnings",
+    "Air Suspension Systems & Clearance",
+    "Coupling Security and Electrical Hookups",
+    "Load Security and Tailgate Hatches",
+    "In-Cab Warning Lights & Instruments",
+    "Seat Belts and Internal Safety Equipment"
+  ];
+
+  const listContainer = document.getElementById('walkaroundSection');
+  checklistItems.forEach((item, index) => {
+    const padNumber = String(index + 1).padStart(2, '0');
+    const row = document.createElement('div');
+    row.className = 'check-row';
+    row.innerHTML = `
+      <span class="check-label"><strong>${padNumber}.</strong> ${item}</span>
+      <div class="btn-toggle">
+        <input type="radio" id="item-${padNumber}-pass" name="Item ${padNumber}" value="${item} - PASS" checked>
+        <label for="item-${padNumber}-pass" class="pass-label">PASS</label>
+        
+        <input type="radio" id="item-${padNumber}-fail" name="Item ${padNumber}" value="${item} - FAIL">
+        <label for="item-${padNumber}-fail" class="fail-label">FAIL</label>
+      </div>
+    `;
+    listContainer.appendChild(row);
+  });
+
+  function updateEwcCode() {
+    const desc = document.getElementById("wtnDesc").value;
+    const ewcInput = document.getElementById("wtnEwc");
+    if (desc === "Inert Soil & Stones") { ewcInput.value = "17 05 04"; }
+    else if (desc === "Mixed Construction & Demolition Waste") { ewcInput.value = "17 09 04"; }
+    else if (desc === "Concrete, Bricks, Tiles & Ceramics") { ewcInput.value = "17 01 07"; }
+    else if (desc === "Track Ballast containing hazardous substances") { ewcInput.value = "17 05 07*"; }
+  }
+
+  window.onload = function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          document.getElementById('latField').value = position.coords.latitude;
+          document.getElementById('lonField').value = position.coords.longitude;
+          document.getElementById('gpsStatus').innerHTML = "✅ Secure GPS Satellite Lock Active";
+          document.getElementById('gpsStatus').style.backgroundColor = "#dcfce7";
+          document.getElementById('gpsStatus').style.borderColor = "#86efac";
+          document.getElementById('gpsStatus').style.color = "#15803d";
+        },
+        (error) => {
+          document.getElementById('gpsStatus').innerHTML = "⚠️ GPS Lock Denied. Check Phone Location Settings.";
+          document.getElementById('gpsStatus').style.backgroundColor = "#fee2e2";
+          document.getElementById('gpsStatus').style.borderColor = "#fca5a5";
+          document.getElementById('gpsStatus').style.color = "#b91c1c";
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      document.getElementById('gpsStatus').innerHTML = "❌ Browser does not support Location Tracking Services.";
+    }
+  };
+
+  document.getElementById('complianceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = "Uploading Log... Please Wait...";
+    submitBtn.disabled = true;
+    submitBtn.style.backgroundColor = "#718096";
+
+    const formData = new FormData(this);
+    const searchParams = new URLSearchParams();
+
+    for (const pair of formData) {
+      searchParams.append(pair[0], pair[1]);
+    }
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      body: searchParams,
+      mode: 'no-cors'
+    })
+    .then(() => {
+      alert("✅ Compliance Log Submitted Successfully!\nYour data has dropped into the Excel Dashboard.");
+      document.getElementById('complianceForm').reset();
+      updateEwcCode();
+      submitBtn.innerHTML = "Submit Secure Log";
+      submitBtn.disabled = false;
+      submitBtn.style.backgroundColor = "#1a365d";
+    })
+    .catch(err => {
+      alert("Submission communication error. Contact system admin.");
+      console.error(err);
+      submitBtn.innerHTML = "Submit Secure Log";
+      submitBtn.disabled = false;
+      submitBtn.style.backgroundColor = "#1a365d";
+    });
+  });
+</script>
+
+</body>
+</html>
