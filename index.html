@@ -272,7 +272,42 @@
     </form>
 </div>
 
-<script>
+<// Listens for form submission to lock data variables correctly
+    document.getElementById('checksheet-form').addEventListener('submit', function() {
+        // Human-readable labels array to match the 20 safety points
+        const labels = [
+            "Mirrors, Glass & Visibility Aids",
+            "Windscreen Wipers & Washers",
+            "Steering, Horn & Cockpit Controls",
+            "Tachograph, Speedo & Instruments",
+            "Brakes, Air Build-up & Leakage",
+            "Seatbelts, Seats & Cab Security",
+            "Lights, Indicators & Markers",
+            "Reflectors & Conspicuity Markings",
+            "Tyres, Tread Depth & Sidewalls",
+            "Wheels, Wheel Nuts & Rims",
+            "Mudguards, Wings & Spray Suppression",
+            "Battery, Electrical Links & Wiring",
+            "Engine Fluid Levels & Hidden Leaks",
+            "Fuel System, Tank Caps & Lines",
+            "Exhaust System & AdBlue Security",
+            "Body, Doors & Sideguards",
+            "Load Security, Lashings & Tarps",
+            "Fifth Wheel, Pins & Tow Couplings",
+            "Marker Boards & Dynamic Load Signs",
+            "Under-Vehicle Security & Suspension"
+        ];
+
+        for(let i=1; i<=20; i++) {
+            const padId = i < 10 ? '0' + i : i;
+            let hiddenInput = document.getElementById(`check_${padId}`);
+            if (hiddenInput) {
+                // This combines the number, the real safety name, and the PASS/FAIL choice
+                hiddenInput.name = `Item ${padId}`;
+                hiddenInput.value = `${labels[i-1]} -> ${hiddenInput.value}`;
+            }
+        }
+    });>
     // Switches UI button states and changes hidden field values
     function setCheckStatus(button, inputId) {
         const parent = button.parentElement;
