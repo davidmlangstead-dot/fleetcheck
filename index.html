@@ -2,124 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fleet & Site Compliance Portal</title>
     <style>
+        :root {
+            --start-day-color: #2e7d32;
+            --run-check-color: #f57c00;
+            --powra-color: #d32f2f;
+            --wtn-color: #0288d1;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
             margin: 0;
             padding: 15px;
-            color: #333;
+            padding-bottom: 40px;
         }
+
         .header {
             text-align: center;
-            padding: 10px 0 20px 0;
-            border-bottom: 2px solid #ddd;
-            margin-bottom: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 25px;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #1a1a1a;
+
+        .header h1 { 
+            margin: 0; 
+            font-size: 26px; 
         }
+        
+        .header p { 
+            margin: 5px 0 0 0; 
+            color: var(--text-muted); 
+            font-size: 14px; 
+        }
+
         .grid-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            max-width: 500px;
+            gap: 20px;
+            max-width: 480px;
             margin: 0 auto;
         }
+
         .app-card {
-            background: white;
+            background: var(--card-bg);
+            border-radius: 14px;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-left: 6px solid #666;
-            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-top: 5px solid #666;
         }
-        .app-card:active {
-            transform: scale(0.98);
+
+        .app-card h2 { 
+            margin: 0 0 8px 0; 
+            font-size: 20px; 
         }
-        .app-card h2 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
+        
+        .app-card p { 
+            margin: 0 0 20px 0; 
+            font-size: 14px; 
+            color: var(--text-muted); 
+            line-height: 1.4; 
         }
-        .app-card p {
-            margin: 0 0 15px 0;
-            font-size: 14px;
-            color: #666;
-        }
+
         .btn {
             display: block;
             width: 100%;
-            padding: 12px;
-            background-color: #007bff;
+            padding: 14px;
             color: white;
             text-align: center;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 16px;
             border: none;
-            cursor: pointer;
             box-sizing: border-box;
+            transition: opacity 0.2s, transform 0.1s;
         }
-        /* Color Coding for Independent Modules */
-        .start-day { border-left-color: #28a745; }
-        .start-day .btn { background-color: #28a745; }
-        
-        .run-check { border-left-color: #ffc107; }
-        .run-check .btn { background-color: #ffc107; color: #333; }
-        
-        .powra { border-left-color: #dc3545; }
-        .powra .btn { background-color: #dc3545; }
-        
-        .wtn { border-left-color: #0056b3; }
-        .wtn .btn { background-color: #0056b3; }
+
+        .btn:active { 
+            transform: scale(0.97); 
+            opacity: 0.9; 
+        }
+
+        .mod-start { border-top-color: var(--start-day-color); }
+        .mod-start h2 { color: var(--start-day-color); }
+        .mod-start .btn { background-color: var(--start-day-color); }
+
+        .mod-check { border-top-color: var(--run-check-color); }
+        .mod-check h2 { color: var(--run-check-color); }
+        .mod-check .btn { background-color: var(--run-check-color); color: #000; }
+
+        .mod-powra { border-top-color: var(--powra-color); }
+        .mod-powra h2 { color: var(--powra-color); }
+        .mod-powra .btn { background-color: var(--powra-color); }
+
+        .mod-wtn { border-top-color: var(--wtn-color); }
+        .mod-wtn h2 { color: var(--wtn-color); }
+        .mod-wtn .btn { background-color: var(--wtn-color); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Compliance Driver Portal</h1>
-        <p>Run modules independently below</p>
+        <h1>Driver Compliance Portal</h1>
+        <p>Select a standalone operational module</p>
     </div>
 
     <div class="grid-container">
 
-        <div class="app-card start-day">
-            <h2>1. Start Day Shift</h2>
-            <p>Log your official start time, mileage, and location entry.</p>
-            <button class="btn" onclick="runModule('Start Day')">Launch Start Day</button>
+        <div class="app-card mod-start">
+            <h2>🟢 1. Start Day</h2>
+            <p>Initialize shift tracking, record opening odometer values, and submit duty declaration.</p>
+            <a href="https://script.google.com/macros/s/AKfycbwOvcoR54_qGJc_AuGpqIKrmEe50YWvqig9sOodcyxozIXaF8O5gmKEbVBgfyVksj7O/exec?module=start_day" class="btn" target="_blank">Start Shift</a>
         </div>
 
-        <div class="app-card run-check">
-            <h2>2. Vehicle Run Check</h2>
-            <p>Complete walkaround inspection and safety checklist.</p>
-            <button class="btn" onclick="runModule('Run Check')">Launch Vehicle Check</button>
+        <div class="app-card mod-check">
+            <h2>🟡 2. Run Check</h2>
+            <p>Execute mandatory pre-use walkaround vehicle safety checklist and report structural defects.</p>
+            <a href="https://script.google.com/macros/s/AKfycbwOvcoR54_qGJc_AuGpqIKrmEe50YWvqig9sOodcyxozIXaF8O5gmKEbVBgfyVksj7O/exec?module=run_check" class="btn" target="_blank">Begin Run Check</a>
         </div>
 
-        <div class="app-card powra">
-            <h2>3. Arrive on Site POWRA</h2>
-            <p>Point of Work Risk Assessment. Flag site hazards instantly.</p>
-            <button class="btn" onclick="runModule('POWRA Assessment')">Launch POWRA Form</button>
+        <div class="app-card mod-powra">
+            <h2>🔴 3. Arrive on Site POWRA</h2>
+            <p>Point of Work Risk Assessment. Analyze structural hazards, ground stability, and overhead lines before operations.</p>
+            <a href="https://script.google.com/macros/s/AKfycbwOvcoR54_qGJc_AuGpqIKrmEe50YWvqig9sOodcyxozIXaF8O5gmKEbVBgfyVksj7O/exec?module=powra" class="btn" target="_blank">Launch POWRA Assessment</a>
         </div>
 
-        <div class="app-card wtn">
-            <h2>4. Tipping WTN</h2>
-            <p>Log waste materials, weights, and digital tipping signatures.</p>
-            <button class="btn" onclick="runModule('Waste Transfer Note')">Launch WTN Tracker</button>
+        <div class="app-card mod-wtn">
+            <h2>🔵 4. Tipping WTN</h2>
+            <p>Generate electronic Waste Transfer Notes. Log materials, weight allocations, and receiver digital signature.</p>
+            <a href="https://script.google.com/macros/s/AKfycbwOvcoR54_qGJc_AuGpqIKrmEe50YWvqig9sOodcyxozIXaF8O5gmKEbVBgfyVksj7O/exec?module=wtn" class="btn" target="_blank">Create Waste Note</a>
         </div>
 
     </div>
-
-    <script>
-        function runModule(moduleName) {
-            alert(moduleName + " module is running independently! Form tracking data is initializing...");
-            // Your internal module logic or redirects go here securely
-        }
-    </script>
 
 </body>
 </html>
