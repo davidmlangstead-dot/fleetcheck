@@ -4,18 +4,20 @@ on:
   push:
     branches: ["main", "master"]
 
+# Grants secure clearance tokens to talk directly to hosting servers
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Prevents multiple deployments from crashing into each other
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
   deploy:
-    # --- THIS ENVIRONMENT BLOCK FIXES THE STATUS 400 ERROR ---
+    # Explicitly links the job to the required hosting environment
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
