@@ -41,6 +41,10 @@
         .checkbox-label { font-size: 13px; font-weight: 700; color: #0f172a; line-height: 1.4; user-select: none; }
         
         .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 15px; letter-spacing: 0.5px; box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.3); }
+        
+        /* GPS Status Banner */
+        .gps-banner { font-size: 12px; font-weight: 700; padding: 8px; border-radius: 6px; text-align: center; margin-bottom: 14px; background: #fee2e2; color: #991b1b; }
+        .gps-banner.ready { background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
@@ -49,13 +53,21 @@
     <h1>HGV Walkaround Check</h1>
     <div class="subtitle">DVSA & RHA Compliance Portal</div>
 
-    <form id="checksheet-form" action="https://script.google.com/macros/s/AKfycbxVnGzxIqZzZ5dan8_ALRJLpTKF7gD8s59tWSEmklxVtsTNh1bRVcz5p3pXLFO-bp5v/exec" method="POST">
+    <!-- 🚨 PASTE YOUR GOOGLE WEB APP URL (ENDING IN /exec) IN THE ACTION ATTRIBUTE BELOW 🚨 -->
+    <form id="checksheet-form" action="https://script.google.com/macros/s/AKfycby1B6l0x40mRdHRyesim3ffDJuvS0LX9_h8wwypZVwTZLGOFmMmFIrvBzAbPCA28IcE/exec" method="POST">
         
+        <!-- Hidden Inputs for GPS Tracking Coordinates -->
+        <input type="hidden" name="Latitude" id="gps_lat" value="">
+        <input type="hidden" name="Longitude" id="gps_lon" value="">
+
+        <!-- Asset & Driver Details -->
         <div class="section">
             <div class="section-title">Asset & Driver Details</div>
+            <div id="gps-status" class="gps-banner">Waiting for location permission...</div>
+            
             <div class="form-group">
                 <label for="driver_name">Driver Name</label>
-                <input type="text" name="Driver Name" id="driver_name" required placeholder="Enter full name">
+                <input type="text" name="Driver Name" id="driver_name" required placeholder="Enter full name" onchange="requestGPS()">
             </div>
             <div class="form-group">
                 <label for="vehicle_reg">Vehicle Registration (Tractor/Rigid)</label>
@@ -71,6 +83,7 @@
             </div>
         </div>
 
+        <!-- Full 20 Legal Compliance Checklist -->
         <div class="section">
             <div class="section-title">In-Cab & Exterior Safety Points</div>
             
@@ -79,7 +92,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_01')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_01')">FAIL</button>
-                    <input type="hidden" id="check_01" name="Item 01" value="PASS">
+                    <input type="hidden" id="check_01" value="PASS">
                 </div>
             </div>
 
@@ -88,7 +101,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_02')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_02')">FAIL</button>
-                    <input type="hidden" id="check_02" name="Item 02" value="PASS">
+                    <input type="hidden" id="check_02" value="PASS">
                 </div>
             </div>
 
@@ -97,7 +110,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_03')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_03')">FAIL</button>
-                    <input type="hidden" id="check_03" name="Item 03" value="PASS">
+                    <input type="hidden" id="check_03" value="PASS">
                 </div>
             </div>
 
@@ -106,7 +119,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_04')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_04')">FAIL</button>
-                    <input type="hidden" id="check_04" name="Item 04" value="PASS">
+                    <input type="hidden" id="check_04" value="PASS">
                 </div>
             </div>
 
@@ -115,7 +128,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_05')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_05')">FAIL</button>
-                    <input type="hidden" id="check_05" name="Item 05" value="PASS">
+                    <input type="hidden" id="check_05" value="PASS">
                 </div>
             </div>
 
@@ -124,7 +137,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_06')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_06')">FAIL</button>
-                    <input type="hidden" id="check_06" name="Item 06" value="PASS">
+                    <input type="hidden" id="check_06" value="PASS">
                 </div>
             </div>
 
@@ -133,7 +146,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_07')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_07')">FAIL</button>
-                    <input type="hidden" id="check_07" name="Item 07" value="PASS">
+                    <input type="hidden" id="check_07" value="PASS">
                 </div>
             </div>
 
@@ -142,7 +155,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_08')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_08')">FAIL</button>
-                    <input type="hidden" id="check_08" name="Item 08" value="PASS">
+                    <input type="hidden" id="check_08" value="PASS">
                 </div>
             </div>
 
@@ -151,7 +164,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_09')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_09')">FAIL</button>
-                    <input type="hidden" id="check_09" name="Item 09" value="PASS">
+                    <input type="hidden" id="check_09" value="PASS">
                 </div>
             </div>
 
@@ -160,7 +173,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_10')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_10')">FAIL</button>
-                    <input type="hidden" id="check_10" name="Item 10" value="PASS">
+                    <input type="hidden" id="check_10" value="PASS">
                 </div>
             </div>
 
@@ -169,7 +182,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_11')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_11')">FAIL</button>
-                    <input type="hidden" id="check_11" name="Item 11" value="PASS">
+                    <input type="hidden" id="check_11" value="PASS">
                 </div>
             </div>
 
@@ -178,7 +191,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_12')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_12')">FAIL</button>
-                    <input type="hidden" id="check_12" name="Item 12" value="PASS">
+                    <input type="hidden" id="check_12" value="PASS">
                 </div>
             </div>
 
@@ -187,7 +200,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_13')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_13')">FAIL</button>
-                    <input type="hidden" id="check_13" name="Item 13" value="PASS">
+                    <input type="hidden" id="check_13" value="PASS">
                 </div>
             </div>
 
@@ -196,7 +209,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_14')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_14')">FAIL</button>
-                    <input type="hidden" id="check_14" name="Item 14" value="PASS">
+                    <input type="hidden" id="check_14" value="PASS">
                 </div>
             </div>
 
@@ -205,7 +218,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_15')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_15')">FAIL</button>
-                    <input type="hidden" id="check_15" name="Item 15" value="PASS">
+                    <input type="hidden" id="check_15" value="PASS">
                 </div>
             </div>
 
@@ -214,7 +227,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_16')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_16')">FAIL</button>
-                    <input type="hidden" id="check_16" name="Item 16" value="PASS">
+                    <input type="hidden" id="check_16" value="PASS">
                 </div>
             </div>
 
@@ -223,7 +236,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_17')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_17')">FAIL</button>
-                    <input type="hidden" id="check_17" name="Item 17" value="PASS">
+                    <input type="hidden" id="check_17" value="PASS">
                 </div>
             </div>
 
@@ -232,7 +245,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_18')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_18')">FAIL</button>
-                    <input type="hidden" id="check_18" name="Item 18" value="PASS">
+                    <input type="hidden" id="check_18" value="PASS">
                 </div>
             </div>
 
@@ -241,7 +254,7 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_19')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_19')">FAIL</button>
-                    <input type="hidden" id="check_19" name="Item 19" value="PASS">
+                    <input type="hidden" id="check_19" value="PASS">
                 </div>
             </div>
 
@@ -250,11 +263,12 @@
                 <div class="status-switch">
                     <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'check_20')">PASS</button>
                     <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'check_20')">FAIL</button>
-                    <input type="hidden" id="check_20" name="Item 20" value="PASS">
+                    <input type="hidden" id="check_20" value="PASS">
                 </div>
             </div>
         </div>
 
+        <!-- Legal Disclaimer & Declaration Box -->
         <div class="section">
             <div class="section-title">Legal Declaration</div>
             <div class="disclaimer-box">
@@ -268,13 +282,54 @@
             </div>
         </div>
 
+        <!-- Submission Trigger -->
         <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION SHEET</button>
     </form>
 </div>
 
-<// Listens for form submission to lock data variables correctly
+<script>
+    // Automate smartphone built-in GPS checking
+    function requestGPS() {
+        const banner = document.getElementById('gps-status');
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    document.getElementById('gps_lat').value = position.coords.latitude;
+                    document.getElementById('gps_lon').value = position.coords.longitude;
+                    banner.innerText = "✓ GPS Location Locked Successfully";
+                    banner.className = "gps-banner ready";
+                },
+                function(error) {
+                    banner.innerText = "⚠ GPS Blocked: Please enable location services.";
+                    banner.className = "gps-banner";
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            banner.innerText = "⚠ GPS Not Supported on this device.";
+        }
+    }
+    
+    // Automatically trigger GPS activation when page pulls open
+    window.onload = requestGPS;
+
+    function setCheckStatus(button, inputId) {
+        const parent = button.parentElement;
+        parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        document.getElementById(inputId).value = button.innerText;
+    }
+
+    function toggleCheckbox(e) {
+        if (e.target.tagName !== 'INPUT') {
+            const chk = document.getElementById('legal_agree');
+            chk.checked = !chk.checked;
+        }
+    }
+
+    // Formats text completely before firing to Google Script backend
     document.getElementById('checksheet-form').addEventListener('submit', function() {
-        // Human-readable labels array to match the 20 safety points
         const labels = [
             "Mirrors, Glass & Visibility Aids",
             "Windscreen Wipers & Washers",
@@ -302,38 +357,13 @@
             const padId = i < 10 ? '0' + i : i;
             let hiddenInput = document.getElementById(`check_${padId}`);
             if (hiddenInput) {
-                // This combines the number, the real safety name, and the PASS/FAIL choice
                 hiddenInput.name = `Item ${padId}`;
-                hiddenInput.value = `${labels[i-1]} -> ${hiddenInput.value}`;
-            }
-        }
-    });>
-    // Switches UI button states and changes hidden field values
-    function setCheckStatus(button, inputId) {
-        const parent = button.parentElement;
-        parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        
-        document.getElementById(inputId).value = button.innerText;
-    }
-
-    function toggleCheckbox(e) {
-        if (e.target.tagName !== 'INPUT') {
-            const chk = document.getElementById('legal_agree');
-            chk.checked = !chk.checked;
-        }
-    }
-
-    // Listens for form submission to lock data variables correctly
-    document.getElementById('checksheet-form').addEventListener('submit', function() {
-        for(let i=1; i<=20; i++) {
-            const padId = i < 10 ? '0' + i : i;
-            let hiddenInput = document.getElementById(`check_${padId}`);
-            if (hiddenInput) {
-                hiddenInput.name = `Item ${padId}`;
+                hiddenInput.value = `${i}. ${labels[i-1]}: [${hiddenInput.value}]`;
             }
         }
     });
+</script>
+
 </script>
 
 </body>
