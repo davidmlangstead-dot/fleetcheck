@@ -322,13 +322,6 @@
         button.classList.add('active');
     }
 
-    function toggleCheckbox(e) {
-        if(e.target.tagName !== 'INPUT') {
-            const chk = document.getElementById('legal_agree');
-            chk.checked = !chk.checked;
-        }
-    }
-
     // Capture file handler and instant compressor routing
     async function handleFileSelected(inputElement, rowId) {
         if (!inputElement.files || inputElement.files.length === 0) return;
@@ -473,7 +466,6 @@ ${auditItems.join('\n')}
     }
 
     function syncOfflineQueue() {
-        // Simple placeholder for standard online/offline tracking logic triggers
         if (!db || !navigator.onLine) return;
     }
 
@@ -491,6 +483,13 @@ ${auditItems.join('\n')}
         submitBtn.innerText = "SUBMIT INSPECTION SHEET";
     }
 
+    function toggleCheckbox(e) {
+        if (e.target.tagName !== 'INPUT') {
+            const chk = document.getElementById('legal_agree');
+            chk.checked = !chk.checked;
+        }
+    }
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js').catch(err => console.log('Tracker operational', err));
@@ -498,9 +497,9 @@ ${auditItems.join('\n')}
     }
 
     // =========================================================================
-    // ⬇️ TYPE YOUR WORK EMAIL BETWEEN THE QUOTES BELOW SO IT TARGETS YOU ⬇️
+    // ⬇️ CHANGE THE EMAIL ADDRESS INSIDE THE QUOTE MARKS BELOW ⬇️
     // =========================================================================
-   const TARGET_WORK_EMAIL = davidlangstead@hgvpack.onmicrosoft;
+    const TARGET_WORK_EMAIL = "davidlangstead@hgvpack.onmicrosoft";
     
 </script>
 
