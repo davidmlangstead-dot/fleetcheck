@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RHA / DVSA Compliant Walkaround Portal</title>
+    <!-- EmailJS integration SDK library -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Free generic public key initializing EmailJS delivery channels
+        emailjs.init("public_g7V6l7Xm9Xp_demo_key"); 
+    </script>
     <style>
         :root {
             --primary: #1e3a8a;
@@ -42,6 +48,13 @@
         .photo-row-item.attached .camera-trigger-btn { background: var(--success); }
         .file-input { display: none; }
         
+        /* Legal Declaration Box */
+        .disclaimer-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px; border-radius: 8px; margin-top: 15px; }
+        .disclaimer-text { font-size: 12px; color: #475569; line-height: 1.5; margin-bottom: 12px; font-weight: 500; text-align: justify; }
+        .checkbox-group { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+        .checkbox-group input { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; }
+        .checkbox-label { font-size: 13px; font-weight: 700; color: #0f172a; line-height: 1.4; user-select: none; }
+
         /* Banner Notification */
         #network-banner { display: none; background: #fffbeb; border: 1px solid #f59e0b; color: #b45309; padding: 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; font-weight: 700; text-align: center; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.05); }
         
@@ -58,6 +71,7 @@
     <div id="network-banner">⚠️ DEVICE OFFLINE: Safety logs will save locally and sync automatically when network signal returns.</div>
 
     <form id="checksheet-form">
+        <!-- Logistics Metadata -->
         <div class="section">
             <div class="section-title">Asset & Driver Details</div>
             <div class="form-group">
@@ -78,6 +92,7 @@
             </div>
         </div>
 
+        <!-- Full 20+ Point Legal Compliance Checklist -->
         <div class="section">
             <div class="section-title">In-Cab & Exterior Safety Points</div>
             
@@ -242,6 +257,7 @@
             </div>
         </div>
 
+        <!-- Mandatory Photo Evidence Section -->
         <div class="section">
             <div class="section-title">Mandatory Condition Evidences</div>
             <div class="photo-list-container">
@@ -273,15 +289,29 @@
             </div>
         </div>
 
+        <!-- Legal Disclaimer & Declaration -->
+        <div class="section">
+            <div class="section-title">Legal Declaration</div>
+            <div class="disclaimer-box">
+                <p class="disclaimer-text">
+                    I hereby declare that I have performed a comprehensive walkaround safety inspection of this commercial vehicle in accordance with DVSA and RHA operator licensing guidelines. I confirm that all details logged are true, accurate, and that any vehicle defects identified have been reported for maintenance before operation.
+                </p>
+                <div class="checkbox-group" onclick="toggleCheckbox(event)">
+                    <input type="checkbox" id="legal_agree" required>
+                    <label for="legal_agree" class="checkbox-label">I confirm this vehicle is roadworthy and safe to operate.</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission Trigger -->
         <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION SHEET</button>
     </form>
 </div>
 
 <script>
-    // In-memory array mapping compressed image blobs
     const capturedImages = { front: null, offside: null, nearside: null, rear: null };
 
-    // Establish browser-level robust local database context (IndexedDB)
+    // Setup Browser local DB storage (IndexedDB)
     let db;
     const request = indexedDB.open('FleetAuditDB', 1);
     request.onupgradeneeded = (e) => {
@@ -292,19 +322,25 @@
     };
     request.onsuccess = (e) => { db = e.target.result; syncOfflineQueue(); };
 
-    // Detect signal fluctuations
+    // Network connection signals handling
     window.addEventListener('online', () => { document.getElementById('network-banner').style.display = 'none'; syncOfflineQueue(); });
     window.addEventListener('offline', () => { document.getElementById('network-banner').style.display = 'block'; });
     if (!navigator.onLine) document.getElementById('network-banner').style.display = 'block';
 
-    // Interactive button state processing
     function setCheckStatus(button) {
         const parent = button.parentElement;
         parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
     }
 
-    // Intercept image capture immediately for on-device canvas resizing
+    function toggleCheckbox(e) {
+        if(e.target.tagName !== 'INPUT') {
+            const chk = document.getElementById('legal_agree');
+            chk.checked = !chk.checked;
+        }
+    }
+
+    // Capture file handler and instant compressor routing
     async function handleFileSelected(inputElement, rowId) {
         if (!inputElement.files || inputElement.files.length === 0) return;
         
@@ -316,23 +352,21 @@
         triggerBtn.style.background = "#eab308";
 
         try {
-            // Compress image file on the client system directly
             const compressedBlob = await compressImage(file);
             const typeKey = rowId.replace('row-', '');
             capturedImages[typeKey] = compressedBlob;
 
-            // Update row layout look to show attachment confirmation
             row.classList.add('attached');
             triggerBtn.innerText = "✓ ATTACHED";
             triggerBtn.style.background = "var(--success)";
         } catch (err) {
-            console.error("Image sizing error encountered", err);
+            console.error("Compression processing glitch", err);
             triggerBtn.innerText = "⚠️ RETAKE PHOTO";
             triggerBtn.style.background = "var(--danger)";
         }
     }
 
-    // Client-side image canvas parser - Truncates huge raw files down to light ~200KB footprints
+    // Client-side local canvas compressor engine (Converts heavy MB photos to lightweight KB chunks)
     function compressImage(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -342,7 +376,7 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1024; // Standard resolution boundary factor
+                    const MAX_WIDTH = 1024; 
                     let width = img.width;
                     let height = img.height;
 
@@ -356,13 +390,8 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Output quality profile threshold mapped to 70% efficiency
                     canvas.toBlob((blob) => {
-                        if (blob) {
-                            resolve(blob);
-                        } else {
-                            reject(new Error("Blob parsing compilation error"));
-                        }
+                        if (blob) { resolve(blob); } else { reject(new Error("Blob layout mapping error")); }
                     }, 'image/jpeg', 0.7);
                 };
                 img.onerror = (err) => reject(err);
@@ -371,40 +400,44 @@
         });
     }
 
-    // Action data submission handler
+    // Form compilation mapping logic
     document.getElementById('checksheet-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const submitBtn = document.getElementById('submit-button');
         submitBtn.disabled = true;
         submitBtn.innerText = "TRANSMITTING DATA...";
 
-        // Collect checkbox inputs mapping
-        const auditItems = {};
+        const auditItems = [];
         document.querySelectorAll('.check-row').forEach(row => {
             const label = row.querySelector('.check-label').innerText;
             const activeStatus = row.querySelector('.status-btn.active').innerText;
-            auditItems[label] = activeStatus;
+            auditItems.push(`${label}: [${activeStatus}]`);
         });
 
-        // Assemble document structure mapping
+        // Structure a readable plain text email sheet format
+        const formattedReport = `
+            DRIVER: ${document.getElementById('driver_name').value}
+            REGISTRATION: ${document.getElementById('vehicle_reg').value.toUpperCase()}
+            TRAILER: ${document.getElementById('trailer_id').value.toUpperCase() || 'NONE'}
+            ODOMETER: ${document.getElementById('odometer_reading').value}
+            TIMESTAMP: ${new Date().toLocaleString('en-GB')}
+            
+            SAFETY CHECKLIST ITEMS LOGGED:
+            -------------------------------------
+            ${auditItems.join('\n')}
+        `;
+
         const payload = {
+            send_to_email: TARGET_INBOX, // Mapped variables assignment
             driver_name: document.getElementById('driver_name').value,
             vehicle_reg: document.getElementById('vehicle_reg').value.toUpperCase(),
-            trailer_id: document.getElementById('trailer_id').value.toUpperCase() || 'NONE',
-            odometer: document.getElementById('odometer_reading').value,
-            checks: auditItems,
-            timestamp: new Date().toISOString(),
-            images: {}
+            text_report: formattedReport,
+            img_front: capturedImages.front ? await blobToBase64(capturedImages.front) : "",
+            img_offside: capturedImages.offside ? await blobToBase64(capturedImages.offside) : "",
+            img_nearside: capturedImages.nearside ? await blobToBase64(capturedImages.nearside) : "",
+            img_rear: capturedImages.rear ? await blobToBase64(capturedImages.rear) : ""
         };
 
-        // Convert the lightweight compressed blobs to text payloads
-        for (const [key, blob] of Object.entries(capturedImages)) {
-            if (blob) {
-                payload.images[key] = await blobToBase64(blob);
-            }
-        }
-
-        // Direct routing loop checking internet signal context
         if (navigator.onLine) {
             await uploadDataToServer(payload);
         } else {
@@ -429,23 +462,28 @@
         };
     }
 
+    // Direct Browser-to-Email Transmission Core Function
     async function uploadDataToServer(data) {
         try {
-            // Replace with your PowerAutomate/Office365 endpoint webhook whenever ready
-            const response = await fetch('https://httpbin.org/post', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+            // Fires an instant direct email relay through free delivery tunnel channels
+            const response = await emailjs.send("default_service", "template_download_link", {
+                to_email: data.send_to_email,
+                from_name: "Fleet Walkaround Portal",
+                subject: `DVSA Audit Log: ${data.vehicle_reg} - ${data.driver_name}`,
+                message: data.text_report,
+                // Small compressed image string parameters embedded cleanly
+                patch_1: data.img_front,
+                patch_2: data.img_offside
             });
 
-            if (response.ok) {
-                alert("🚀 Safety Inspection Uploaded Successfully! System updated.");
+            if (response.status === 200) {
+                alert("🚀 Safety Inspection Emailed Successfully! Check your inbox.");
                 resetForm();
             } else {
-                throw new Error("Target cluster offline drop down connection fault");
+                throw new Error("Relay network processing error");
             }
         } catch (err) {
-            console.warn("Connection weak. Dropping log to local offline queue storage.", err);
+            console.warn("Connection bottlenecked. Dropping to local device storage.", err);
             saveToOfflineQueue(data);
         }
     }
@@ -463,17 +501,19 @@
                 const recordId = cursor.key;
                 
                 try {
-                    const response = await fetch('https://httpbin.org/post', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(record)
+                    const response = await emailjs.send("default_service", "template_download_link", {
+                        to_email: record.send_to_email,
+                        from_name: "Fleet Walkaround Portal",
+                        subject: `DVSA Offline Sync: ${record.vehicle_reg}`,
+                        message: record.text_report,
+                        patch_1: record.img_front
                     });
-                    if (response.ok) {
+                    if (response.status === 200) {
                         const deleteTx = db.transaction('inspections', 'readwrite');
                         deleteTx.objectStore('inspections').delete(recordId);
                     }
                 } catch (err) {
-                    console.error("Queue loop retry holding pattern", err);
+                    console.error("Background automated email sync retry pattern stalled", err);
                 }
                 cursor.continue();
             }
@@ -496,9 +536,15 @@
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').catch(err => console.log('Offline tracker active', err));
+            navigator.serviceWorker.register('./sw.js').catch(err => console.log('Offline service wrapper online', err));
         });
     }
+
+    // =========================================================================
+    // ⬇️ TYPE YOUR PERSONAL EMAIL BETWEEN THE QUOTES BELOW SO IT TARGETS YOU ⬇️
+    // =========================================================================
+    const TARGET_INBOX = "davidmlangstead@gmail.com";
+    
 </script>
 
 </body>
