@@ -4,6 +4,17 @@ on:
   push:
     branches: ["main", "master"]
 
+# --- THIS IS THE NEW SECURITY BLOCK GITHUB WANTS ---
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
