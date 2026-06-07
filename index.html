@@ -3,288 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DVSA / RHA Statutory Fleet Portal</title>
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <title>Fleet Walkaround Portal</title>
     <style>
-        :root { --primary: #1e3a8a; --success: #16a34a; --danger: #dc2626; --background: #f1f5f9; --text: #0f172a; --gray: #475569; }
+        :root {
+            --primary: #1e3a8a;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --background: #f1f5f9;
+            --text: #0f172a;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--background); color: var(--text); padding: 12px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        h1 { font-size: 20px; text-align: center; color: var(--primary); margin-bottom: 2px; font-weight: 800; }
-        .subtitle { text-align: center; color: var(--gray); font-size: 10px; margin-bottom: 20px; font-weight: 700; letter-spacing: 1px; }
+        body { background: var(--background); color: var(--text); padding: 16px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        h1 { color: var(--primary); font-size: 24px; margin-bottom: 20px; text-align: center; border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        .section { margin-bottom: 24px; background: #fff; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; }
+        .section-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 12px; text-transform: uppercase; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+        input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
         
-        .section-title { background: #e2e8f0; color: var(--primary); padding: 8px 12px; font-size: 13px; font-weight: 800; border-radius: 6px; margin: 18px 0 10px 0; letter-spacing: 0.5px; }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-weight: 700; margin-bottom: 4px; font-size: 12px; color: var(--gray); }
-        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; }
+        /* Compliance Checkboxes */
+        .check-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .check-label { font-size: 14px; font-weight: 500; padding-right: 10px; }
+        .status-switch { display: flex; gap: 8px; }
+        .status-btn { padding: 8px 16px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; }
+        .status-btn.pass.active { background: var(--success); color: white; border-color: var(--success); }
+        .status-btn.fail.active { background: var(--danger); color: white; border-color: var(--danger); }
         
-        /* Camera Target & Guide Finders */
+        /* Camera Interface & Containers */
         .photo-list-container { margin-bottom: 15px; }
-        .photo-row-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; }
+        .photo-row-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; transition: all 0.3s ease; }
         .photo-label { font-size: 12px; font-weight: 700; color: #1e293b; }
         .camera-trigger-btn { padding: 10px 14px; background: #64748b; color: white; border: none; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; min-width: 120px; text-align: center; }
         .photo-row-item.attached { border-color: var(--success); background: #f0fdf4; }
         .photo-row-item.attached .camera-trigger-btn { background: var(--success); }
         .file-input { display: none; }
         
-        .preview-wrapper { position: relative; width: 65px; height: 45px; margin-right: 10px; display: none; border-radius: 4px; overflow: hidden; border: 2px dashed #94a3b8; }
-        .preview-img { width: 100%; height: 100%; object-fit: cover; }
-        .line-overlay-guide { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; border: 1px dashed rgba(22, 163, 74, 0.8); pointer-events: none; }
-        .photo-row-item.attached .preview-wrapper { display: block; border: 1px solid var(--success); }
-        .right-side-cap { display: flex; align-items: center; }
-
-        /* Checklist Design */
-        .check-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; }
-        .check-text { font-size: 13px; font-weight: 600; padding-right: 10px; color: #1e293b; }
-        .toggle-btn { padding: 6px 14px; border: none; border-radius: 6px; font-weight: 800; font-size: 11px; cursor: pointer; background: var(--success); color: white; min-width: 65px; text-align: center; }
-        .toggle-btn.fail { background: var(--danger); }
+        /* Queue Notification Banner */
+        #network-banner { display: none; background: #fef3c7; border: 1px solid #f59e0b; color: #b45309; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; font-weight: 600; text-align: center; }
         
-        .defects-box { display: none; margin-bottom: 15px; }
-        textarea { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 14px; min-height: 85px; resize: none; }
-        
-        /* Official Legal Notice Banner */
-        .declaration-box { background: #fff7ed; border: 2px solid #f97316; padding: 14px; border-radius: 10px; margin-top: 15px; font-size: 11px; line-height: 1.4; }
-        .checkbox-container { display: flex; align-items: flex-start; gap: 8px; font-weight: 700; margin-top: 10px; color: #7c2d12; cursor: pointer; }
-        .checkbox-container input { width: 16px; height: 16px; margin-top: 1px; }
-        
-        .submit-btn { width: 100%; padding: 15px; background: #cbd5e1; color: #94a3b8; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: not-allowed; margin-top: 15px; }
-        .submit-btn.ready { background: var(--primary); color: white; cursor: pointer; }
-        
-        /* Queue status style */
-        .status-msg { text-align: center; font-weight: 700; margin-top: 12px; font-size: 13px; display: none; padding: 10px; border-radius: 6px; }
-        .sync-banner { background: #fef08a; color: #854d0e; font-size: 12px; text-align: center; padding: 6px; font-weight: 700; margin-bottom: 10px; border-radius: 6px; display: none; }
+        .submit-btn { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div id="syncBanner" class="sync-banner">⚠️ Device Offline: Reports will auto-save and send when network restores.</div>
+<div class="container">
+    <h1>DVSA Walkaround Check</h1>
+    
+    <div id="network-banner">⚠️ Device Offline: Inspections will save locally and upload automatically when signal returns.</div>
+
+    <form id="checksheet-form">
+        <div class="section">
+            <div class="section-title">Logistics & Asset Details</div>
+            <div class="form-group">
+                <label for="driver_name">Driver Name</label>
+                <input type="text" id="driver_name" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+                <label for="vehicle_reg">Vehicle Registration</label>
+                <input type="text" id="vehicle_reg" required placeholder="RE26 XYZ" style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label for="trailer_id">Trailer ID (Optional)</label>
+                <input type="text" id="trailer_id" placeholder="T1234">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Safety Inspection Points</div>
+            
+            <div class="check-row">
+                <span class="check-label">1. Tyres, Wheels & Fixings</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">2. Brakes & Air Systems</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">3. Lights, Indicators & Reflectors</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">4. Windscreen, Wipers & Washers</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                </div>
+            </div>
+
+            <div class="check-row">
+                <span class="check-label">5. Mirrors & Visibility Aids</span>
+                <div class="status-switch">
+                    <button type="button" class="status-btn pass active" onclick="setCheckStatus(this, 'pass')">PASS</button>
+                    <button type="button" class="status-btn fail" onclick="setCheckStatus(this, 'fail')">FAIL</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Mandatory Condition Photos</div>
+            <div class="photo-list-container">
+                
+                <div class="photo-row-item" id="row-front">
+                    <span class="photo-label">FRONT ASPECT (Include Reg)</span>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-front').click()">📷 CAPTURE</button>
+                    <input type="file" id="img-front" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-front')">
+                </div>
+
+                <div class="photo-row-item" id="row-offside">
+                    <span class="photo-label">OFFSIDE PROFILE (Right)</span>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-offside').click()">📷 CAPTURE</button>
+                    <input type="file" id="img-offside" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-offside')">
+                </div>
+
+                <div class="photo-row-item" id="row-nearside">
+                    <span class="photo-label">NEARSIDE PROFILE (Left)</span>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-nearside').click()">📷 CAPTURE</button>
+                    <input type="file" id="img-nearside" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-nearside')">
+                </div>
+
+                <div class="photo-row-item" id="row-rear">
+                    <span class="photo-label">REAR ASPECT & COUPLING</span>
+                    <button type="button" class="camera-trigger-btn" onclick="document.getElementById('img-rear').click()">📷 CAPTURE</button>
+                    <input type="file" id="img-rear" class="file-input" accept="image/*" capture="environment" required onchange="handleFileSelected(this, 'row-rear')">
+                </div>
+
+            </div>
+        </div>
+
+        <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION</button>
+    </form>
+</div>
+
+<script>
+    // Global storage object for image files mapping
+    const capturedImages = { front: null, offside: null, nearside: null, rear: null };
+
+    // Set up local storage database (IndexedDB) for robust offline capability
+    let db;
+    const request = indexedDB.open('FleetAuditDB', 1);
+    request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        if (!db.objectStoreNames.contains('inspections')) {
+            db.createObjectStore('inspections', { keyPath: 'id', autoIncrement: true });
+        }
+    };
+    request.onsuccess = (e) => { db = e.target.result; syncOfflineQueue(); };
+
+    // Listen to network changes to toggle the offline notice banner
+    window.addEventListener('online', () => { document.getElementById('network-banner').style.display = 'none'; syncOfflineQueue(); });
+    window.addEventListener('offline', () => { document.getElementById('network-banner').style.display = 'block'; });
+    if (!navigator.onLine) document.getElementById('network-banner').style.display = 'block';
+
+    // Toggle PASS/FAIL mechanics visually
+    function setCheckStatus(button, status) {
+        const parent = button.parentElement;
+        parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    }
+
+    // Handles compression immediately when driver clicks save/takes snapshot
+    async function handleFileSelected(inputElement, rowId) {
+        if (!inputElement.files || inputElement.files.length === 0) return;
         
-        <h1>Statutory Walkaround Portal</h1>
-        <p class="subtitle">DVSA COMPLIANT • RHA ANALYSIS ENGINE</p>
+        const file = inputElement.files[0];
+        const row = document.getElementById(rowId);
+        const triggerBtn = row.querySelector('.camera-trigger-btn');
+        
+        triggerBtn.innerText = "COMPRESSING...";
+        triggerBtn.style.background = "#eab308";
 
-        <div class="section-title">1. LOGISTICS AUDIT DATA</div>
-        <div class="input-group"><label>Driver Full Name</label><input type="text" id="driverName" placeholder="e.g. David Jones"></div>
-        <div class="input-group"><label>Vehicle Registration Mark (VRM)</label><input type="text" id="vehicleReg" style="text-transform: uppercase;" placeholder="e.g. CU71 DVA"></div>
-        <div class="input-group"><label>Trailer Number (If Applicable)</label><input type="text" id="trailerReg" style="text-transform: uppercase;" placeholder="e.g. T12345"></div>
-        <div class="input-group"><label>Current Odometer Reading (Miles)</label><input type="tel" id="odometer" placeholder="e.g. 248900"></div>
-
-        <div class="section-title">2. MANDATORY 4-SIDE PROOF (WITH ALIGNMENT GUIDES)</div>
-        <div class="photo-list-container">
-            <div class="photo-row-item" id="row-front"><span class="photo-label">1. VEHICLE FRONT ASPECT</span><div class="right-side-cap"><div class="preview-wrapper" id="wrap-front"><div class="line-overlay-guide"></div><img id="prev-front" class="preview-img"></div><button type="button" class="camera-trigger-btn" id="btn-front" onclick="triggerCapture('front')">📷 OPEN CAMERA</button><input type="file" id="input-front" class="file-input" accept="image/*" capture="environment" onchange="processSide(this, 'front')"></div></div>
-            <div class="photo-row-item" id="row-rear"><span class="photo-label">2. VEHICLE REAR ASPECT</span><div class="right-side-cap"><div class="preview-wrapper" id="wrap-rear"><div class="line-overlay-guide"></div><img id="prev-rear" class="preview-img"></div><button type="button" class="camera-trigger-btn" id="btn-rear" onclick="triggerCapture('rear')">📷 OPEN CAMERA</button><input type="file" id="input-rear" class="file-input" accept="image/*" capture="environment" onchange="processSide(this, 'rear')"></div></div>
-            <div class="photo-row-item" id="row-near"><span class="photo-label">3. NEARSIDE (LEFT ASPECT)</span><div class="right-side-cap"><div class="preview-wrapper" id="wrap-near"><div class="line-overlay-guide"></div><img id="prev-near" class="preview-img"></div><button type="button" class="camera-trigger-btn" id="btn-near" onclick="triggerCapture('near')">📷 OPEN CAMERA</button><input type="file" id="input-near" class="file-input" accept="image/*" capture="environment" onchange="processSide(this, 'near')"></div></div>
-            <div class="photo-row-item" id="row-off"><span class="photo-label">4. OFFSIDE (RIGHT ASPECT)</span><div class="right-side-cap"><div class="preview-wrapper" id="wrap-off"><div class="line-overlay-guide"></div><img id="prev-off" class="preview-img"></div><button type="button" class="camera-trigger-btn" id="btn-off" onclick="triggerCapture('off')">📷 OPEN CAMERA</button><input type="file" id="input-off" class="file-input" accept="image/*" capture="environment" onchange="processSide(this, 'off')"></div></div>
-        </div>
-
-        <div class="section-title">3. INTERNAL CABIN SAFETY POINTS</div>
-        <div class="check-item"><span class="check-text">Mirrors, Glass & CMOS Monitor Systems</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Windscreen Wipers, Washers & Fluid</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Dashboard Warning Lights & Tachograph</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Steering Control, Play & Linkages</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Horn Operation & Accessibility</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Brakes, Air Leakage & Pressure Systems</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">In-Cab Vehicle Height Indicator Marker</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Seatbelts Anchorage & Condition</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Security of Cab Structure, Doors & Steps</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-
-        <div class="section-title">4. EXTERNAL CHASSIS &amp; RUNNING GEAR</div>
-        <div class="check-item"><span class="check-text">Lights, Indicators, Markers & Lenses</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Fuel System Integrity, Caps & Seals</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Oil Systems, Fluid Leaks & Levels</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Security of Body Panels, Wings & Guard Rails</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Battery Storage Box Security & Isolation</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Diesel Exhaust Fluid (AdBlue) Levels</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Excessive Engine Smoke Emissions</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Spray Suppression Flaps & Deflectors</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Tyres Condition, Pressure & Tread (1mm min)</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Wheel Fixings, Rings & Nut Torque Marks</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Brake Hoses, Susie Lines & Couplings</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Electrical Suzies & Connection Insulation</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Coupling Security, Fifth Wheel & Pins</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Security of Load, Straps & Curtains</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Registration Plates Cleanliness & Security</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-        <div class="check-item"><span class="check-text">Reflectors, Conspicuity Markings & Signs</span><button type="button" class="toggle-btn" onclick="toggleBtn(this)">PASS</button></div>
-
-        <div class="input-group defects-box" id="defectsBox">
-            <label style="color:var(--danger)">RHA Defect Statement / Rectification Action Required</label>
-            <textarea id="defectNotes" placeholder="Provide full details of item failures..."></textarea>
-        </div>
-
-        <div class="declaration-box">
-            <strong>ROAD TRAFFIC ACT STATUTORY DECLARATION:</strong> I certify that I have conducted the required pre-use inspection of this vehicle under DVSA regulations. I declare that the items listed above are checked and found serviceable except where noted.
-            <label class="checkbox-container"><input type="checkbox" id="legalConfirm" onchange="checkComplianceLock()"> I sign and declare this report is correct.</label>
-        </div>
-
-        <button type="button" id="submitBtn" class="submit-btn" onclick="submitCheck()" disabled>Complete All Items To Unlock</button>
-        <div id="statusMsg" class="status-msg"></div>
-    </div>
-
-    <script>
-        // 🛠️ CONFIGURATION SETTINGS
-        const MANAGER_EMAIL = 'davidmlangstead@gmail.com';
-
-        // Register Service Worker for Offline Engine Execution
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
-
-        let photoDataMap = { front: "", rear: "", near: "", off: "" };
-        let gpsCoordinates = "Not Captured/Denied";
-
-        // Watch online status
-        window.addEventListener('online', () => { document.getElementById('syncBanner').style.display = 'none'; processOfflineQueue(); });
-        window.addEventListener('offline', () => { document.getElementById('syncBanner').style.display = 'block'; });
-        if(!navigator.onLine) { document.getElementById('syncBanner').style.display = 'block'; }
-
-        // Live GPS tracking
-        if (navigator.geolocation) { navigator.geolocation.getCurrentPosition((pos) => { gpsCoordinates = `${pos.coords.latitude}, ${pos.coords.longitude}`; }, null, {enableHighAccuracy: true}); }
-
-        function toggleBtn(btn) {
-            if (btn.innerText === "PASS") { btn.innerText = "FAIL"; btn.classList.add('fail'); } 
-            else { btn.innerText = "PASS"; btn.classList.remove('fail'); }
-            let standardFailures = false;
-            document.querySelectorAll('.toggle-btn').forEach(b => { if(b.innerText === "FAIL") standardFailures = true; });
-            document.getElementById("defectsBox").style.display = standardFailures ? "block" : "none";
-            checkComplianceLock();
-        }
-
-        function triggerCapture(side) { document.getElementById('input-' + side).click(); }
-
-        function processSide(input, side) {
-            const file = input.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = new Image();
-                img.onload = function () {
-                    const canvas = document.createElement('canvas');
-                    let max = 450; let w = img.width; let h = img.height;
-                    if (w > h) { if (w > max) { h *= max / w; w = max; } } else { if (h > max) { w *= max / h; h = max; } }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    
-                    photoDataMap[side] = canvas.toDataURL('image/jpeg', 0.55);
-                    document.getElementById('row-' + side).classList.add('attached');
-                    document.getElementById('btn-' + side).innerText = "✓ ATTACHED";
-                    document.getElementById('wrap-' + side).style.display = "block";
-                    document.getElementById('prev-' + side).src = photoDataMap[side];
-                    checkComplianceLock();
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function checkComplianceLock() {
-            const photosOk = photoDataMap.front && photoDataMap.rear && photoDataMap.near && photoDataMap.off;
-            const signed = document.getElementById('legalConfirm').checked;
-            const btn = document.getElementById('submitBtn');
-            if (photosOk && signed) { btn.removeAttribute('disabled'); btn.classList.add('ready'); btn.innerText = 'Submit Statutory Declaration'; }
-            else { btn.setAttribute('disabled', 'true'); btn.classList.remove('ready'); btn.innerText = 'Complete All Items To Unlock'; }
-        }
-
-        function submitCheck() {
-            const name = document.getElementById('driverName').value.trim();
-            const reg = document.getElementById('vehicleReg').value.trim().toUpperCase();
-            const trailer = document.getElementById('trailerReg').value.trim().toUpperCase() || "None Coupled";
-            const odo = document.getElementById('odometer').value.trim();
-            const notes = document.getElementById('defectNotes').value.trim();
-            const statusMsg = document.getElementById('statusMsg');
-
-            if (!name || !reg || !odo) { alert("Driver Name, VRM, and Odometer metrics are legal requirements."); return; }
-
-            statusMsg.style.display = "block"; statusMsg.style.background = "#e0f2fe"; statusMsg.style.color = "#0369a1"; statusMsg.innerText = "Processing Compliance Packet...";
-
-            let overallCondition = "NIL DEFECTS REPORTED"; let statusColor = "#16a34a";
-            let auditRows = "";
-            document.querySelectorAll('.check-item').forEach(item => {
-                let text = item.querySelector('.check-text').innerText;
-                let val = item.querySelector('.toggle-btn').innerText;
-                if(val === "FAIL") { overallCondition = "ACTION REQUIRED - DEFECTIVE"; statusColor = "#dc2626"; }
-                let badgeColor = val === "PASS" ? "#dcfce7" : "#fee2e2";
-                let textColor = val === "PASS" ? "#15803d" : "#b91c1c";
-                auditRows += `<tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:7px;font-size:13px;color:#1e293b;">${text}</td><td style="padding:7px;text-align:right;"><span style="background:${badgeColor};color:${textColor};padding:3px 8px;border-radius:4px;font-size:11px;font-weight:bold;">${val}</span></td></tr>`;
-            });
-
-            const auditPayload = {
-                id: "audit_" + Date.now(),
-                name, reg, trailer, odo, notes, overallCondition, statusColor, auditRows, photoDataMap, gpsCoordinates, timestamp: new Date().toLocaleString('en-GB')
-            };
-
-            if (!navigator.onLine) {
-                saveToOfflineQueue(auditPayload);
-                resetForm();
-                return;
-            }
-
-            dispatchEmailPayload(auditPayload);
-        }
-
-        function dispatchEmailPayload(payload) {
-            let emailBody = `
-                <div style="font-family:Arial,sans-serif;max-width:650px;border:1px solid #cbd5e1;padding:24px;border-radius:12px;">
-                    <h2 style="color:#1e3a8a;text-align:center;margin-bottom:2px;font-size:22px;">RHA STATUTORY COMPLIANCE REPORT</h2>
-                    <div style="background:${payload.statusColor};color:white;text-align:center;padding:12px;font-size:16px;font-weight:bold;border-radius:8px;margin:15px 0;">AUDIT RESULTS: ${payload.overallCondition}</div>
-                    <table style="width:100%;font-size:14px;border-collapse:collapse;margin-bottom:20px;">
-                        <tr><td style="padding:6px;font-weight:bold;color:#475569;">Driver Name:</td><td>${payload.name}</td></tr>
-                        <tr><td style="padding:6px;font-weight:bold;color:#475569;">Vehicle Reg (VRM):</td><td style="font-weight:bold;">${payload.reg}</td></tr>
-                        <tr><td style="padding:6px;font-weight:bold;color:#475569;">Trailer Reference:</td><td>${payload.trailer}</td></tr>
-                        <tr><td style="padding:6px;font-weight:bold;color:#475569;">Odometer Metric:</td><td>${payload.odo} Miles</td></tr>
-                        <tr><td style="padding:6px;font-weight:bold;color:#475569;">GPS Position Fix:</td><td>${payload.gpsCoordinates}</td></tr>
-                        <tr><td style="padding:6px;font-weight:bold;color:#475569;">Timestamp:</td><td>${payload.timestamp}</td></tr>
-                    </table>
-                    <h3 style="color:#1e3a8a;border-bottom:2px solid #1e3a8a;padding-bottom:4px;font-size:15px;">Defect / Rectification Details</h3>
-                    <div style="background:#f1f5f9;padding:12px;border-radius:6px;font-size:13px;margin-bottom:20px;">${payload.notes || 'No vehicle component faults logged.'}</div>
-                    <h3 style="color:#1e3a8a;border-bottom:2px solid #1e3a8a;padding-bottom:4px;font-size:15px;">Audited Points</h3>
-                    <table style="width:100%;border-collapse:collapse;margin-bottom:25px;">${payload.auditRows}</table>
-                    <h3 style="color:#1e3a8a;border-bottom:2px solid #1e3a8a;padding-bottom:4px;font-size:15px;">Mandatory 4-Side Aspect Condition Evidence</h3>
-                    <table style="width:100%;">
-                        <tr><td><p style="font-size:10px;font-weight:bold;color:#475569;text-align:center;">1. FRONT ASPECT</p><img src="${payload.photoDataMap.front}" style="width:100%;border-radius:6px;"></td><td><p style="font-size:10px;font-weight:bold;color:#475569;text-align:center;">2. REAR ASPECT</p><img src="${payload.photoDataMap.rear}" style="width:100%;border-radius:6px;"></td></tr>
-                        <tr><td><p style="font-size:10px;font-weight:bold;color:#475569;text-align:center;">3. NEARSIDE (LEFT)</p><img src="${payload.photoDataMap.near}" style="width:100%;border-radius:6px;"></td><td><p style="font-size:10px;font-weight:bold;color:#475569;text-align:center;">4. OFFSIDE (RIGHT)</p><img src="${payload.photoDataMap.off}" style="width:100%;border-radius:6px;"></td></tr>
-                    </table>
-                </div>`;
-
-            Email.send({
-                SecureToken: "51833c8c-1cb8-48b2-b13c-c90a16cb6f7d", 
-                To: MANAGER_EMAIL,
-                From: "walkaround@compliance-gate.com",
-                Subject: `[${payload.overallCondition}] Walkaround - ${payload.reg} - ${payload.name}`,
-                Body: emailBody
-            }).then(message => {
-                if(message === "OK") {
-                    statusMsg.style.background = "#dcfce7"; statusMsg.style.color = "#15803d"; statusMsg.innerText = "✓ Compliance Report Dispatched to Hub!";
-                    resetForm();
-                } else { throw new Error(); }
-            }).catch(() => { saveToOfflineQueue(payload); resetForm(); });
-        }
-
-        function saveToOfflineQueue(payload) {
-            let queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-            queue.push(payload);
-            localStorage.setItem('offlineQueue', JSON.stringify(queue));
-            statusMsg.style.background = "#fef08a"; statusMsg.style.color = "#854d0e"; statusMsg.innerText = "Saved Offline. Report safely queued to internal device storage.";
-        }
-
-        function processOfflineQueue() {
-            let queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-            if (queue.length === 0) return;
-            let payload = queue.shift();
-            localStorage.setItem('offlineQueue', JSON.stringify(queue));
-            dispatchEmailPayload(payload);
-            setTimeout(processOfflineQueue, 2000); // Process next item sequentially
-        }
-
-        function resetForm() {
-            document.getElementById('driverName').value = ''; document.getElementById('vehicleReg').value = ''; document.getElementById('trailerReg').value = ''; document.getElementById('odometer').value = '';
-            document.getElementById('legalConfirm').checked = false; if(document.getElementById('defectNotes')) document.getElementById('defectNotes').value = '';
-            photoDataMap = { front: "", rear: "", near: "", off: "" };
-            ['front', 'rear', 'near', 'off'].forEach(s => { 
-                document.getElementById('row-' + s).classList.remove('attached');
-                document.getElementById('btn-' + s).innerText = "📷 OPEN CAMERA";
-                document.getElementById('wrap-' + s).style.display="none"; 
-            });
-            document.querySelectorAll('.toggle-btn').forEach(btn => { btn.innerText = "PASS"; btn.classList.remove('fail'); });
-            document.getElementById("defectsBox").style.display = "none";
-            checkComplianceLock();
-        }
-    </script>
-</body>
-</html>
+        try {
+            //
