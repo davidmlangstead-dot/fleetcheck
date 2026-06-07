@@ -49,10 +49,8 @@
     <h1>HGV Walkaround Check</h1>
     <div class="subtitle">DVSA & RHA Compliance Portal</div>
 
-    <!-- 🚨 PASTE YOUR GOOGLE WEB APP URL IN THE ACTION ATTRIBUTE BELOW 🚨 -->
-    <form id="checksheet-form" action="https://script.google.com/macros/s/AKfycbx0xLXfgmuCSF5Vdygp2ES-FNH2_kRtVZzOz8wC7u-EdzC-ZwETK6pAxx_FOlzLSV0o/exec) method="POST">
+    <form id="checksheet-form" action="https://script.google.com/macros/s/AKfycbxVnGzxIqZzZ5dan8_ALRJLpTKF7gD8s59tWSEmklxVtsTNh1bRVcz5p3pXLFO-bp5v/exec" method="POST">
         
-        <!-- Logistics Metadata -->
         <div class="section">
             <div class="section-title">Asset & Driver Details</div>
             <div class="form-group">
@@ -73,7 +71,6 @@
             </div>
         </div>
 
-        <!-- Full 20 Legal Compliance Checklist mapped directly to script hooks -->
         <div class="section">
             <div class="section-title">In-Cab & Exterior Safety Points</div>
             
@@ -258,7 +255,6 @@
             </div>
         </div>
 
-        <!-- Legal Disclaimer & Declaration Box -->
         <div class="section">
             <div class="section-title">Legal Declaration</div>
             <div class="disclaimer-box">
@@ -272,19 +268,17 @@
             </div>
         </div>
 
-        <!-- Submission Trigger -->
         <button type="submit" id="submit-button" class="submit-btn">SUBMIT INSPECTION SHEET</button>
     </form>
 </div>
 
 <script>
-    // Safely switches UI button status states and changes hidden field payloads dynamically
+    // Switches UI button states and changes hidden field values
     function setCheckStatus(button, inputId) {
         const parent = button.parentElement;
         parent.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
         
-        // Dynamically matches text content into actual data input parameters
         document.getElementById(inputId).value = button.innerText;
     }
 
